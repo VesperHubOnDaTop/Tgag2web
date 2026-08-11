@@ -211,6 +211,10 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 // เริ่มต้นเปิด Server
 app.listen(PORT, () => {
     console.log(`===========================================`);
