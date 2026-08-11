@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatphongHubx - Roblox Enterprise Multi-Trade System</title>
 
-    <!-- ========================================================================= -->
-    <!-- 1. เปลี่ยนไอคอนรูปโลกด้านบน (Favicon) : ใส่ URL รูปไอคอนของคุณใน href ด้านล่างนี้ -->
-    <!-- ========================================================================= -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg">
 
     <!-- Tailwind CSS CDN -->
@@ -41,16 +39,11 @@
     <style>
         body { 
             font-family: 'Prompt', 'Inter', sans-serif; 
-            
-            /* ========================================================================= */
-            /* 2. ใส่รูป Background : เปลี่ยน URL รูปภาพด้านล่างนี้ตามที่คุณต้องการ */
-            /* ========================================================================= */
             background-image: linear-gradient(rgba(3, 5, 8, 0.85), rgba(3, 5, 8, 0.85)), url('https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            
             color: #f1f5f9; 
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
@@ -177,7 +170,6 @@
             animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Category Badges */
         .category-badge {
             font-size: 9px;
             font-weight: 600;
@@ -225,7 +217,6 @@
     <div id="authOverlay" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
         <div class="auth-card max-w-md w-full p-8 space-y-6 border-blue-500/30">
             
-            <!-- Header & Badge -->
             <div class="space-y-2 text-center">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
                     <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
@@ -233,7 +224,6 @@
                 </div>
                 <h2 id="authTitle" class="text-xl md:text-2xl font-bold text-white tracking-tight">เข้าสู่ระบบเพื่อใช้งาน</h2>
                 
-                <!-- Tab Switcher -->
                 <div class="flex bg-slate-900/90 p-1 rounded-xl border border-bordercolor text-xs mt-3">
                     <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-lg font-medium transition text-white bg-blue-600 shadow">
                         เข้าสู่ระบบ
@@ -274,13 +264,36 @@
                         <input type="text" id="regUsername" required placeholder="ตั้งชื่อผู้ใช้งาน (อย่างน้อย 3 ตัวอักษร)" class="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm">
                     </div>
                 </div>
+
+                <!-- Password Block พร้อมระบบวัดความปลอดภัย -->
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-gray-300">Password</label>
+                    <label class="text-xs font-medium text-gray-300">Password (ตั้งรหัสผ่าน)</label>
                     <div class="relative">
                         <i class="fa-solid fa-key absolute left-4 top-3.5 text-gray-500 text-sm"></i>
-                        <input type="password" id="regPassword" required placeholder="ตั้งรหัสผ่าน (อย่างน้อย 4 ตัวอักษร)" class="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm">
+                        <input type="password" id="regPassword" required oninput="checkPasswordStrength(this.value)" placeholder="ตั้งรหัสผ่าน (อย่างน้อย 4 ตัวอักษร)" class="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm">
+                    </div>
+                    
+                    <div class="space-y-1 pt-1">
+                        <div class="flex gap-1 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div id="pwdBar1" class="h-full w-1/3 bg-transparent transition-all duration-300"></div>
+                            <div id="pwdBar2" class="h-full w-1/3 bg-transparent transition-all duration-300"></div>
+                            <div id="pwdBar3" class="h-full w-1/3 bg-transparent transition-all duration-300"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span id="pwdStrengthText" class="text-gray-500">ความปลอดภัย: กรุณากรอกรหัสผ่าน</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- ช่องยืนยันรหัสผ่านรอบที่ 2 (Confirm Password) -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-gray-300">Confirm Password (ยืนยันรหัสผ่านอีกครั้ง)</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-shield-cat absolute left-4 top-3.5 text-gray-500 text-sm"></i>
+                        <input type="password" id="regConfirmPassword" required placeholder="กรอกรหัสผ่านซ้ำอีกครั้ง" class="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm">
+                    </div>
+                </div>
+
                 <div class="space-y-1.5">
                     <div class="flex justify-between">
                         <label class="text-xs font-medium text-gray-300">License Key</label>
@@ -296,7 +309,6 @@
                 </button>
             </form>
 
-            <!-- Footer Links -->
             <div class="text-center pt-2 flex justify-center items-center gap-4 border-t border-bordercolor">
                 <a href="https://discord.gg/chatphonghubx" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 font-medium transition">
                     <i class="fa-brands fa-discord text-sm"></i> Discord Official
@@ -338,7 +350,6 @@
     <!-- FULL HISTORY LOG MODAL -->
     <div id="fullHistoryModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
         <div class="auth-card max-w-4xl w-full p-6 space-y-4 border-blue-500/40 max-h-[90vh] flex flex-col">
-            
             <div class="flex justify-between items-center border-b border-bordercolor pb-3 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400">
@@ -414,14 +425,11 @@
                     <button id="nextPageBtn" onclick="changeLogPage(1)" class="px-3.5 py-2 bg-inputbg hover:bg-bordercolor border border-bordercolor disabled:opacity-40 rounded-xl transition font-medium">ถัดไป</button>
                 </div>
             </div>
-
         </div>
     </div>
 
     <!-- Main Dashboard Container -->
     <div id="mainDashboard" class="w-full max-w-5xl space-y-6 hidden">
-        
-        <!-- Header Title & User Info Badge -->
         <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-bordercolor gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-2 font-mono">
@@ -450,7 +458,6 @@
             </div>
         </div>
 
-        <!-- Warning Alert Banner -->
         <div class="bg-amber-950/20 border border-amber-500/25 rounded-2xl p-4 flex items-start gap-3.5 text-xs text-amber-200/90 backdrop-blur-md">
             <div class="p-1.5 bg-amber-500/15 rounded-xl text-amber-400 shrink-0">
                 <i class="fa-solid fa-triangle-exclamation text-base"></i>
@@ -460,10 +467,7 @@
             </div>
         </div>
 
-        <!-- Main Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-            <!-- ฝั่งซ้าย: Sender Panel -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="auth-card p-6 space-y-4">
                     <div class="flex justify-between items-center border-b border-bordercolor pb-3.5">
@@ -535,7 +539,6 @@
                 </div>
             </div>
 
-            <!-- ฝั่งขวา: Receiver & Trade Cart Panel -->
             <div class="lg:col-span-7 space-y-6">
                 <div class="auth-card p-6 space-y-5">
                     <h3 class="font-semibold text-sm text-gray-200 border-b border-bordercolor pb-3.5 flex items-center gap-2">
@@ -544,7 +547,6 @@
                     </h3>
 
                     <div class="space-y-4.5">
-                        <!-- ชื่อผู้รับ -->
                         <div class="space-y-1.5">
                             <label class="block text-xs font-medium text-gray-300">ชื่อผู้รับ (Receiver Username):</label>
                             <div class="relative">
@@ -567,7 +569,6 @@
                             </div>
                         </div>
 
-                        <!-- Quick Presets -->
                         <div class="space-y-1.5">
                             <label class="block text-xs font-medium text-gray-300">Quick Presets (ชุดไอเทมด่วน):</label>
                             <div class="flex gap-2">
@@ -576,7 +577,6 @@
                             </div>
                         </div>
 
-                        <!-- เลือกไอเทม + ระบบค้นหาและกรอง -->
                         <div class="space-y-2.5">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <label class="text-xs font-medium text-gray-300">เลือกไอเทมจากกระเป๋า:</label>
@@ -593,7 +593,6 @@
                             </div>
                         </div>
 
-                        <!-- จำนวน & ปุ่มเพิ่ม -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <div class="sm:col-span-2 space-y-1.5">
                                 <label class="block text-xs font-medium text-gray-300">จำนวนที่ต้องการส่ง:</label>
@@ -605,7 +604,6 @@
                             </button>
                         </div>
 
-                        <!-- ตารางสรุปรายการที่จะส่ง -->
                         <div class="pt-2 space-y-2">
                             <div class="flex justify-between items-center">
                                 <label class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
@@ -631,7 +629,6 @@
                             </div>
                         </div>
 
-                        <!-- ข้อความ / โน้ต -->
                         <div class="space-y-1.5">
                             <label class="block text-xs font-medium text-gray-300">ข้อความ / โน้ตเพิ่มเติม (ถ้ามี):</label>
                             <input type="text" id="note" placeholder="ข้อความถึงผู้รับ..." class="glass-input w-full rounded-xl px-4 py-3.5 text-sm placeholder-gray-600 focus:outline-none">
@@ -644,10 +641,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Section: ประวัติการส่งล่าสุด -->
         <div class="auth-card p-6 space-y-4">
             <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-bordercolor pb-3.5 gap-2">
                 <h3 class="font-semibold text-sm text-gray-200 flex items-center gap-2">
@@ -682,7 +677,6 @@
                 </table>
             </div>
         </div>
-
     </div>
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
@@ -699,7 +693,6 @@
         let currentPage = 1;
         const itemsPerPage = 8;
 
-        // ตรวจสอบ Session อัตโนมัติเมื่อเปิดหน้าเว็บ
         window.addEventListener('DOMContentLoaded', async () => {
             const savedUser = JSON.parse(localStorage.getItem('user_session'));
             if (savedUser && savedUser.username && savedUser.key) {
@@ -721,7 +714,6 @@
             }
         });
 
-        // สลับแท็บ Login / Register
         function switchAuthTab(tab) {
             const loginForm = document.getElementById('loginForm');
             const regForm = document.getElementById('registerForm');
@@ -744,7 +736,47 @@
             }
         }
 
-        // ระบบเข้าสู่ระบบ
+        function checkPasswordStrength(pwd) {
+            const bar1 = document.getElementById('pwdBar1');
+            const bar2 = document.getElementById('pwdBar2');
+            const bar3 = document.getElementById('pwdBar3');
+            const text = document.getElementById('pwdStrengthText');
+
+            if (!pwd) {
+                bar1.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                bar2.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                bar3.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                text.innerText = 'ความปลอดภัย: กรุณากรอกรหัสผ่าน';
+                text.className = 'text-gray-500';
+                return;
+            }
+
+            let score = 0;
+            if (pwd.length >= 4) score++;
+            if (pwd.length >= 8) score++;
+            if (/[A-Z]/.test(pwd) || /[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) score++;
+
+            if (score === 1) {
+                bar1.className = 'h-full w-1/3 bg-rose-500 transition-all duration-300';
+                bar2.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                bar3.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                text.innerText = 'ความปลอดภัย: ค่อนข้างง่าย';
+                text.className = 'text-rose-400';
+            } else if (score === 2) {
+                bar1.className = 'h-full w-1/3 bg-amber-500 transition-all duration-300';
+                bar2.className = 'h-full w-1/3 bg-amber-500 transition-all duration-300';
+                bar3.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                text.innerText = 'ความปลอดภัย: ปานกลาง';
+                text.className = 'text-amber-400';
+            } else if (score >= 3) {
+                bar1.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300';
+                bar2.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300';
+                bar3.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300';
+                text.innerText = 'ความปลอดภัย: ปลอดภัยสูง';
+                text.className = 'text-emerald-400';
+            }
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
@@ -777,13 +809,21 @@
             }
         }
 
-        // ระบบสมัครสมาชิก
+        // ระบบสมัครสมาชิกพร้อมตรวจสอบรหัสผ่าน 2 รอบ
         async function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
             const key = document.getElementById('regLicenseKey').value.trim();
             const btnSubmit = document.getElementById('btnRegisterSubmit');
+
+            // ตรวจสอบว่ารหัสผ่านทั้งสองช่องตรงกันหรือไม่
+            if (password !== confirmPassword) {
+                showToast("รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง!", "error");
+                document.getElementById('regConfirmPassword').focus();
+                return;
+            }
 
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังลงทะเบียน...`;
@@ -802,7 +842,9 @@
                     document.getElementById('loginUsername').value = username;
                     document.getElementById('loginPassword').value = '';
                     document.getElementById('regPassword').value = '';
+                    document.getElementById('regConfirmPassword').value = '';
                     document.getElementById('regLicenseKey').value = '';
+                    checkPasswordStrength('');
                 } else {
                     showToast(data.message || "การสมัครสมาชิกล้มเหลว", "error");
                 }
@@ -814,7 +856,6 @@
             }
         }
 
-        // แสดงผลหน้า Dashboard หลังยืนยันตัวตนสำเร็จ
         function renderDashboard(user) {
             document.getElementById('authOverlay').style.display = 'none';
             document.getElementById('mainDashboard').classList.remove('hidden');
@@ -826,7 +867,6 @@
             fetchInventoryData();
         }
 
-        // ออกจากระบบ
         function handleLogout() {
             localStorage.removeItem('user_session');
             document.getElementById('mainDashboard').classList.add('hidden');
@@ -877,7 +917,6 @@
             return map[category] || category || 'อื่นๆ';
         }
 
-        // ฟังก์ชัน Toast ที่ปรับลำดับ z-[9999] ให้อยู่ชั้นบนสุดเสมอ
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
