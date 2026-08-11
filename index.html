@@ -371,6 +371,19 @@
 
             <div class="bg-inputbg rounded-xl p-4 text-center border border-bordercolor">
                 <p class="text-xs text-gray-400 mb-2">สแกน QR Code เพื่อโอนเงินผ่าน PromptPay</p>
+
+                <!-- เลือก/กรอกยอดเงิน: เปลี่ยนยอดเมื่อไหร่ QR จะเจนใหม่ทันทีและล็อกยอดในแอปธนาคาร -->
+                <div class="flex justify-center gap-2 mb-3">
+                    <button type="button" onclick="setBuyAmount(50)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="50">50</button>
+                    <button type="button" onclick="setBuyAmount(100)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="100">100</button>
+                    <button type="button" onclick="setBuyAmount(200)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="200">200</button>
+                    <button type="button" onclick="setBuyAmount(500)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="500">500</button>
+                </div>
+                <div class="relative max-w-[180px] mx-auto mb-3">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-mono">฿</span>
+                    <input type="number" id="buyAmountInput" min="1" step="1" value="100" oninput="onBuyAmountInput(this.value)" class="glass-input w-full rounded-xl pl-7 pr-3 py-2 text-sm text-center font-mono font-semibold">
+                </div>
+
                 <img id="buyQrImage" src="https://promptpay.io/ใส่เบอร์หรือพร้อมเพย์ของคุณ/100.png" alt="PromptPay QR" class="w-44 h-44 mx-auto rounded-xl shadow-md mb-2 border border-bordercolor">
                 <p class="text-base font-semibold text-emerald-400">ยอดชำระ: <span id="buyDisplayPrice">100</span> บาท</p>
                 <p class="text-[11px] text-gray-500 mt-1">โอนเงินแล้วแนบสลิปด้านล่างเพื่อรับ Key ทันที</p>
@@ -709,16 +722,22 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Mock Data / LocalStorage State Management
+        // Application State
         let currentUser = null;
         let userRole = 'USER';
         let activeKey = '';
+        let authToken = null; // JWT ที่ได้จาก /api/login หรือ /api/register ใช้แนบไปกับ request ที่ต้องยืนยันตัวตน
 
         let inventoryDatabase = [];
         let selectedItemIds = new Set();
         let tradeHistory = [];
         let currentLogPage = 1;
         const logsPerPage = 10;
+
+        // ==== PromptPay QR Config ====
+        // ตั้งค่าเบอร์โทร/พร้อมเพย์ของคุณตรงนี้ที่เดียว ใช้ร่วมกันทุกจุดที่เจน QR
+        const PROMPTPAY_ID = '0643582506';
+        let currentBuyAmount = 89;
 
         // Initialization
         window.addEventListener('DOMContentLoaded', () => {
@@ -817,8 +836,8 @@
             }
         }
 
-        // Login Handler
-        function handleLogin(e) {
+        // Login Handler — ยิงไป /api/login จริง แล้วรับ JWT token กลับมา
+        async function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
             const pass = document.getElementById('loginPassword').value;
@@ -828,17 +847,40 @@
                 return;
             }
 
-            currentUser = username;
-            userRole = username.toLowerCase() === 'admin' ? 'ADMIN' : 'USER';
-            activeKey = 'KEY-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const btn = document.getElementById('btnLoginSubmit');
+            btn.disabled = true;
 
-            saveSession();
-            initDashboard();
-            showToast(`ยินดีต้อนรับคุณ ${currentUser} เข้าสู่ระบบสำเร็จ`, 'success');
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass })
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showToast(result.message || 'เข้าสู่ระบบไม่สำเร็จ', 'error');
+                    return;
+                }
+
+                currentUser = result.user.username;
+                userRole = result.user.role;
+                activeKey = result.user.key;
+                authToken = result.token || null;
+
+                saveSession();
+                initDashboard();
+                showToast(`ยินดีต้อนรับคุณ ${currentUser} เข้าสู่ระบบสำเร็จ`, 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่', 'error');
+            } finally {
+                btn.disabled = false;
+            }
         }
 
-        // Register Handler
-        function handleRegister(e) {
+        // Register Handler — ยิงไป /api/register จริง แล้ว login ต่อทันทีเพื่อรับ token
+        async function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
             const pass = document.getElementById('regPassword').value;
@@ -862,13 +904,50 @@
                 return;
             }
 
-            currentUser = username;
-            userRole = 'VIP-USER';
-            activeKey = key.toUpperCase();
+            const btn = document.getElementById('btnRegisterSubmit');
+            btn.disabled = true;
 
-            saveSession();
-            initDashboard();
-            showToast('สมัครสมาชิกและผูก License Key สำเร็จ!', 'success');
+            try {
+                const regResponse = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass, key })
+                });
+                const regResult = await regResponse.json();
+
+                if (!regResponse.ok || !regResult.success) {
+                    showToast(regResult.message || 'สมัครสมาชิกไม่สำเร็จ', 'error');
+                    return;
+                }
+
+                // สมัครสำเร็จแล้ว ล็อกอินต่อทันทีเพื่อรับ token และเข้าสู่ Dashboard เลย
+                const loginResponse = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass })
+                });
+                const loginResult = await loginResponse.json();
+
+                if (!loginResponse.ok || !loginResult.success) {
+                    showToast('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง', 'success');
+                    switchAuthTab('login');
+                    return;
+                }
+
+                currentUser = loginResult.user.username;
+                userRole = loginResult.user.role;
+                activeKey = loginResult.user.key;
+                authToken = loginResult.token || null;
+
+                saveSession();
+                initDashboard();
+                showToast('สมัครสมาชิกและผูก License Key สำเร็จ!', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่', 'error');
+            } finally {
+                btn.disabled = false;
+            }
         }
 
         // Session Management
@@ -876,14 +955,18 @@
             localStorage.setItem('chatphong_user', currentUser);
             localStorage.setItem('chatphong_role', userRole);
             localStorage.setItem('chatphong_key', activeKey);
+            if (authToken) localStorage.setItem('chatphong_token', authToken);
         }
 
         function loadSavedSession() {
             const savedUser = localStorage.getItem('chatphong_user');
-            if (savedUser) {
+            const savedToken = localStorage.getItem('chatphong_token');
+            // ไม่มี token แปลว่า session ไม่ถูกต้อง/หมดอายุ บังคับ login ใหม่แทนการเชื่อ localStorage เฉยๆ
+            if (savedUser && savedToken) {
                 currentUser = savedUser;
                 userRole = localStorage.getItem('chatphong_role') || 'USER';
-                activeKey = localStorage.getItem('chatphong_key') || 'KEY-DEMO';
+                activeKey = localStorage.getItem('chatphong_key') || '-';
+                authToken = savedToken;
                 initDashboard();
             }
         }
@@ -892,10 +975,17 @@
             localStorage.removeItem('chatphong_user');
             localStorage.removeItem('chatphong_role');
             localStorage.removeItem('chatphong_key');
+            localStorage.removeItem('chatphong_token');
             currentUser = null;
+            authToken = null;
             document.getElementById('authOverlay').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('hidden');
             showToast('ออกจากระบบเรียบร้อยแล้ว', 'info');
+        }
+
+        // ใช้แนบไปกับ fetch ที่ต้องยืนยันตัวตน เช่น อนาคตถ้าทำ endpoint ส่งไอเทมฝั่ง server จริง
+        function authHeaders() {
+            return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
         }
 
         // Dashboard Initialization
@@ -1296,11 +1386,48 @@
                 helperText.classList.remove('hidden'); // เตือนว่ายังไม่ได้ล็อกอิน ให้ตั้ง username เอง
             }
 
+            // รีเซ็ตยอดเงินเป็นค่าเริ่มต้นทุกครั้งที่เปิด Modal แล้วเจน QR ให้ตรงกัน
+            setBuyAmount(100);
+
             document.getElementById('buyKeyModal').classList.remove('hidden');
         }
 
         function closeBuyModal() {
             document.getElementById('buyKeyModal').classList.add('hidden');
+        }
+
+        // เจน QR ใหม่ทุกครั้งที่ยอดเงินเปลี่ยน — promptpay.io จะฝังยอดเงินลงใน QR
+        // ทำให้แอปธนาคารของผู้จ่ายล็อกยอดโอนตายตัว แก้ไขจำนวนเงินเองไม่ได้
+        function regenerateBuyQR(amount) {
+            const qrImg = document.getElementById('buyQrImage');
+            const priceText = document.getElementById('buyDisplayPrice');
+            qrImg.src = `https://promptpay.io/${PROMPTPAY_ID}/${amount}.png`;
+            priceText.innerText = amount;
+        }
+
+        function setBuyAmount(amount) {
+            currentBuyAmount = amount;
+            document.getElementById('buyAmountInput').value = amount;
+            highlightActiveAmountBtn(amount);
+            regenerateBuyQR(amount);
+        }
+
+        function onBuyAmountInput(value) {
+            const amount = parseInt(value, 10);
+            if (!amount || amount <= 0) return; // รอจนกว่าจะเป็นตัวเลขที่ใช้งานได้ ไม่เจน QR ค้างๆ
+            currentBuyAmount = amount;
+            highlightActiveAmountBtn(amount);
+            regenerateBuyQR(amount);
+        }
+
+        function highlightActiveAmountBtn(amount) {
+            document.querySelectorAll('.buy-amount-btn').forEach(btn => {
+                if (parseInt(btn.getAttribute('data-amount'), 10) === amount) {
+                    btn.classList.add('border-emerald-500', 'text-emerald-400');
+                } else {
+                    btn.classList.remove('border-emerald-500', 'text-emerald-400');
+                }
+            });
         }
 
         function previewBuySlip(event) {
@@ -1340,6 +1467,7 @@
             try {
                 const formData = new FormData();
                 formData.append('userId', userId);
+                formData.append('amount', currentBuyAmount);
                 formData.append('slip', slipFile);
 
                 const response = await fetch('/api/verify-slip', {
