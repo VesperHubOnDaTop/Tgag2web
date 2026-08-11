@@ -9,22 +9,22 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// ให้บริการไฟล์ Static จากโฟลเดอร์ public (หน้าเว็บ)
+// ให้บริการหน้าเว็บไซต์ Static จากโฟลเดอร์ public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ==================== DATABASE จำลอง (สามารถเปลี่ยนเป็น MongoDB หรือ PostgreSQL ได้ภายหลัง) ====================
+// ฐานข้อมูลจำลองสำหรับเก็บ License Key
 let licenseKeys = {
     "VIP-KEY-12345": { status: "active", hwid: null, expires: "2026-12-31" }
 };
 
 // ==================== API ROUTES ====================
 
-// 1. ตรวจสอบสถานะระบบ
+// ตรวจสอบสถานะระบบ
 app.get('/api/status', (req, res) => {
     res.json({ status: "online", message: "ChatphongHubx Enterprise System is running smoothly." });
 });
 
-// 2. ตรวจสอบและยืนยัน License Key (สำหรับ Roblox Script หรือ Client)[cite: 21]
+// ตรวจสอบ License Key และ HWID (สำหรับเชื่อมต่อกับสคริปต์เกม)[cite: 21]
 app.post('/api/verify-key', (req, res) => {
     const { key, hwid } = req.body;
 
@@ -42,7 +42,6 @@ app.post('/api/verify-key', (req, res) => {
         return res.status(403).json({ success: false, message: "License key is inactive or banned." });
     }
 
-    // จัดการระบบ HWID Lock
     if (!licenseData.hwid) {
         licenseData.hwid = hwid || "UNKNOWN_HWID";
     } else if (licenseData.hwid !== hwid) {
@@ -56,11 +55,9 @@ app.post('/api/verify-key', (req, res) => {
     });
 });
 
-// 3. สำหรับเพิ่ม Key ใหม่ (Admin)
+// เพิ่ม Key ใหม่สำหรับ Admin
 app.post('/api/admin/create-key', (req, res) => {
     const { adminSecret, newKey, expiresDate } = req.body;
-    
-    // ตั้งรหัสผ่านผ่าน Environment Variable บน Render ได้
     const ADMIN_PASS = process.env.ADMIN_SECRET || "admin1234";
 
     if (adminSecret !== ADMIN_PASS) {
@@ -80,7 +77,7 @@ app.post('/api/admin/create-key', (req, res) => {
     res.json({ success: true, message: `Key ${newKey} created successfully.` });
 });
 
-// เปิดเซิร์ฟเวอร์
+// เริ่มต้นรันเซิร์ฟเวอร์
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
