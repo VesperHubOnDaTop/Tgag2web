@@ -191,6 +191,16 @@
         .category-badge-package { background: rgba(45, 212, 191, 0.18); color: #2dd4bf; border-color: rgba(45, 212, 191, 0.35); }
         .category-badge-other { background: rgba(148, 163, 184, 0.18); color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); }
 
+        .cat-color-weapon { color: #f87171; }
+        .cat-color-gear { color: #fbbf24; }
+        .cat-color-hat { color: #34d399; }
+        .cat-color-face { color: #60a5fa; }
+        .cat-color-accessory { color: #a78bfa; }
+        .cat-color-torso { color: #f472b6; }
+        .cat-color-legs { color: #fb923c; }
+        .cat-color-package { color: #2dd4bf; }
+        .cat-color-other { color: #94a3b8; }
+
         .modal-backdrop {
             background: rgba(3, 5, 8, 0.85);
             backdrop-filter: blur(12px);
@@ -255,6 +265,7 @@
                     </div>
                 </div>
 
+                <!-- Password Block พร้อมระบบวัดความปลอดภัย -->
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-gray-300">Password (ตั้งรหัสผ่าน)</label>
                     <div class="relative">
@@ -274,6 +285,7 @@
                     </div>
                 </div>
 
+                <!-- ช่องยืนยันรหัสผ่านรอบที่ 2 (Confirm Password) -->
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-gray-300">Confirm Password (ยืนยันรหัสผ่านอีกครั้ง)</label>
                     <div class="relative">
@@ -299,6 +311,7 @@
                 </button>
             </form>
 
+            <!-- ปุ่มซื้อ Key: แสดงบนหน้า Login/Register เสมอ ไม่ต้องรอสมัครสมาชิกก่อน -->
             <button onclick="openBuyModal()" class="btn-gradient-emerald w-full text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm">
                 <i class="fa-solid fa-cart-shopping"></i> ยังไม่มี Key? ซื้อ License Key ที่นี่
             </button>
@@ -359,6 +372,7 @@
             <div class="bg-inputbg rounded-xl p-4 text-center border border-bordercolor">
                 <p class="text-xs text-gray-400 mb-2">สแกน QR Code เพื่อโอนเงินผ่าน PromptPay</p>
 
+                <!-- เลือก/กรอกยอดเงิน: เปลี่ยนยอดเมื่อไหร่ QR จะเจนใหม่ทันทีและล็อกยอดในแอปธนาคาร -->
                 <div class="flex justify-center gap-2 mb-3">
                     <button type="button" onclick="setBuyAmount(50)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="50">50</button>
                     <button type="button" onclick="setBuyAmount(100)" class="buy-amount-btn glass-input px-3 py-1.5 rounded-lg text-xs font-mono hover:border-emerald-500 transition" data-amount="100">100</button>
@@ -370,7 +384,7 @@
                     <input type="number" id="buyAmountInput" min="1" step="1" value="100" oninput="onBuyAmountInput(this.value)" class="glass-input w-full rounded-xl pl-7 pr-3 py-2 text-sm text-center font-mono font-semibold">
                 </div>
 
-                <img id="buyQrImage" src="https://promptpay.io/0800000000/100.png" alt="PromptPay QR" class="w-44 h-44 mx-auto rounded-xl shadow-md mb-2 border border-bordercolor">
+                <img id="buyQrImage" src="https://promptpay.io/ใส่เบอร์หรือพร้อมเพย์ของคุณ/100.png" alt="PromptPay QR" class="w-44 h-44 mx-auto rounded-xl shadow-md mb-2 border border-bordercolor">
                 <p class="text-base font-semibold text-emerald-400">ยอดชำระ: <span id="buyDisplayPrice">100</span> บาท</p>
                 <p class="text-[11px] text-gray-500 mt-1">โอนเงินแล้วแนบสลิปด้านล่างเพื่อรับ Key ทันที</p>
             </div>
@@ -511,437 +525,640 @@
                 <span id="userBadge" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs px-3 py-2 rounded-xl font-mono">
                     User: -
                 </span>
-                <span id="roleBadge" class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs px-3 py-2 rounded-xl font-mono">
-                    Role: User
+                <span id="roleBadge" class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs px-3 py-2 rounded-xl font-mono uppercase">
+                    Role: -
                 </span>
-                <button onclick="handleLogout()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs px-3 py-2 rounded-xl font-medium transition">
-                    <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                <div id="activeKeyBadge" class="text-xs bg-inputbg border border-bordercolor px-3.5 py-2 rounded-xl font-mono text-emerald-400 shadow-inner">
+                    Key: -
+                </div>
+                <button onclick="openBuyModal()" class="bg-emerald-950/30 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-800/40 text-xs px-3.5 py-2 rounded-xl transition font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-cart-shopping"></i> ซื้อ Key
+                </button>
+                <button onclick="handleLogout()" class="bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 border border-rose-800/40 text-xs px-3.5 py-2 rounded-xl transition font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-power-off"></i> ออกจากระบบ
                 </button>
             </div>
         </div>
 
-        <!-- Main Dashboard Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Side: Trade Panel & Item Selector -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="auth-card p-6 space-y-5">
-                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane text-blue-400"></i> ตั้งค่าการส่งไอเทม
-                    </h3>
+        <div class="bg-amber-950/20 border border-amber-500/25 rounded-2xl p-4 flex items-start gap-3.5 text-xs text-amber-200/90 backdrop-blur-md">
+            <div class="p-1.5 bg-amber-500/15 rounded-xl text-amber-400 shrink-0">
+                <i class="fa-solid fa-triangle-exclamation text-base"></i>
+            </div>
+            <div class="leading-relaxed pt-0.5">
+                <span class="font-semibold text-amber-400">คำเตือนความปลอดภัยสูงสุด:</span> โปรดตรวจสอบ Username ผู้รับให้ถูกต้องก่อนกดยืนยัน ระบบอัตโนมัติความเร็วสูงนี้ทำงานทันทีและไม่สามารถดึงคืนได้เมื่อดำเนินการสำเร็จ
+            </div>
+        </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-medium text-gray-300">Roblox Sender Username</label>
-                            <input type="text" id="senderUsername" oninput="updateProfileCards()" placeholder="ชื่อผู้ส่งไอเทม" class="glass-input w-full rounded-xl px-4 py-2.5 text-sm">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-medium text-gray-300">Roblox Receiver Username</label>
-                            <input type="text" id="receiverUsername" oninput="updateProfileCards()" placeholder="ชื่อผู้รับไอเทม" class="glass-input w-full rounded-xl px-4 py-2.5 text-sm">
-                        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-5 space-y-6">
+                <div class="auth-card p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-bordercolor pb-3.5">
+                        <h3 class="font-semibold text-sm text-gray-200 flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-blue-400"></i>
+                            1. เลือกตัวละคร (Sender)
+                        </h3>
+                        <button onclick="fetchInventoryData()" class="bg-inputbg hover:bg-bordercolor text-gray-300 border border-bordercolor text-xs font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 active:scale-95 shadow-sm">
+                            <i class="fa-solid fa-rotate text-gray-400"></i>
+                            รีเฟรช
+                        </button>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-medium text-gray-300">ข้อความโน้ต (Optional)</label>
-                        <input type="text" id="tradeNote" placeholder="บันทึกข้อความเพิ่มเติม..." class="glass-input w-full rounded-xl px-4 py-2.5 text-sm">
-                    </div>
+                    <div class="space-y-3.5">
+                        <select id="senderSelect" onchange="onSenderChange()" class="glass-input w-full rounded-xl px-4 py-3 text-sm focus:outline-none cursor-pointer">
+                            <option value="" class="bg-cardbg text-gray-400">-- กำลังโหลดรายชื่อตัวละครในเกม --</option>
+                        </select>
 
-                    <!-- Roblox Profile Preview Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <div class="roblox-profile-card">
-                            <img id="senderAvatar" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-8078BA9B1A00B70D6C1D6B6F1C60731D-Png/150/150/AvatarHeadshot/Png/noFilter" class="roblox-avatar" alt="Sender">
+                        <div id="senderProfileCard" class="roblox-profile-card hidden">
+                            <img id="sAvatar" class="roblox-avatar" src="" alt="Sender Avatar">
                             <div>
-                                <p class="text-[10px] text-gray-400 uppercase font-mono">Sender Profile</p>
-                                <p id="senderProfileName" class="text-sm font-semibold text-white font-mono">Unspecified</p>
-                            </div>
-                        </div>
-                        <div class="roblox-profile-card">
-                            <img id="receiverAvatar" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-8078BA9B1A00B70D6C1D6B6F1C60731D-Png/150/150/AvatarHeadshot/Png/noFilter" class="roblox-avatar" alt="Receiver">
-                            <div>
-                                <p class="text-[10px] text-gray-400 uppercase font-mono">Receiver Profile</p>
-                                <p id="receiverProfileName" class="text-sm font-semibold text-emerald-400 font-mono">Unspecified</p>
+                                <div id="sUsername" class="text-sm font-bold text-white tracking-wide font-mono">-</div>
+                                <div id="sUserId" class="text-[11px] text-gray-400 mt-0.5 font-mono">UserID : -</div>
+                                <div class="text-[10px] text-emerald-400 font-medium mt-1.5 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 w-fit">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    ONLINE IN-GAME
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Item Selection Panel -->
-                <div class="auth-card p-6 space-y-4">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                        <div>
-                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                                <i class="fa-solid fa-boxes-stacked text-amber-400"></i> เลือกไอเทมที่จะส่ง
-                            </h3>
-                            <p class="text-xs text-gray-400">คลิกที่ไอเทมเพื่อเลือกหรือยกเลิกการเลือก</p>
+                <div class="auth-card p-6 space-y-3.5">
+                    <h3 class="font-semibold text-xs text-gray-300 flex items-center gap-2 border-b border-bordercolor pb-3.5">
+                        <i class="fa-brands fa-discord text-indigo-400 text-sm"></i>
+                        Discord Webhook Notification
+                    </h3>
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] text-gray-400">Webhook URL (สำหรับรับการ์ดแจ้งเตือน):</label>
+                        <input type="password" id="webhookUrlInput" placeholder="https://discord.com/api/webhooks/..." class="glass-input w-full rounded-xl px-4 py-3 text-xs placeholder-gray-600 font-mono">
+                    </div>
+                </div>
+
+                <div class="auth-card p-6 space-y-3.5 bg-cardbg/40">
+                    <div class="flex justify-between items-center text-xs text-gray-400 border-b border-bordercolor pb-3">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-pie text-blue-400"></i>
+                            สถานะโควต้าการเทรดประจำวัน
+                        </span>
+                        <span class="text-emerald-400 font-mono text-[11px] font-semibold">Active</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-center pt-1">
+                        <div class="bg-inputbg p-3.5 rounded-xl border border-bordercolor">
+                            <div class="text-[10px] text-gray-400">ใช้ไปแล้ววันนี้</div>
+                            <div id="todayUsedCount" class="text-base font-bold text-white font-mono mt-0.5">0 / 50</div>
                         </div>
-                        <div class="flex items-center gap-2 w-full md:w-auto">
-                            <input type="text" id="itemSearch" oninput="renderItems()" placeholder="ค้นหาไอเทม..." class="glass-input px-3.5 py-1.5 text-xs rounded-xl w-full md:w-40">
-                            <select id="itemCategoryFilter" onchange="renderItems()" class="glass-input px-3.5 py-1.5 text-xs rounded-xl cursor-pointer">
-                                <option value="ALL" class="bg-cardbg">ทุกหมวดหมู่</option>
-                                <option value="weapon" class="bg-cardbg">Weapon</option>
-                                <option value="gear" class="bg-cardbg">Gear</option>
-                                <option value="hat" class="bg-cardbg">Hat</option>
-                                <option value="accessory" class="bg-cardbg">Accessory</option>
+                        <div class="bg-inputbg p-3.5 rounded-xl border border-bordercolor">
+                            <div class="text-[10px] text-gray-400">คงเหลือ</div>
+                            <div id="todayRemainingCount" class="text-base font-bold text-blue-400 font-mono mt-0.5">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-2 flex items-center justify-between text-xs text-gray-400">
+                    <span>ต้องการความช่วยเหลือ?</span>
+                    <a href="https://discord.gg/chatphonghubx" target="_blank" class="text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 font-medium transition">
+                        <i class="fa-brands fa-discord"></i> Discord Official Server
+                    </a>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 space-y-6">
+                <div class="auth-card p-6 space-y-5">
+                    <h3 class="font-semibold text-sm text-gray-200 border-b border-bordercolor pb-3.5 flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-blue-400"></i>
+                        2. คลังไอเทมและเลือกรายการส่ง
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                            <input type="text" id="itemSearch" oninput="renderInventory()" placeholder="ค้นหาชื่อไอเทม..." class="glass-input w-full rounded-xl pl-9 pr-3.5 py-2.5 text-xs">
+                        </div>
+                        <div>
+                            <select id="categoryFilter" onchange="renderInventory()" class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs cursor-pointer">
+                                <option value="ALL" class="bg-cardbg">ทุกหมวดหมู่ (All Categories)</option>
+                                <option value="Weapon" class="bg-cardbg">Weapon</option>
+                                <option value="Gear" class="bg-cardbg">Gear</option>
+                                <option value="Hat" class="bg-cardbg">Hat</option>
+                                <option value="Face" class="bg-cardbg">Face</option>
+                                <option value="Accessory" class="bg-cardbg">Accessory</option>
+                                <option value="Torso" class="bg-cardbg">Torso</option>
+                                <option value="Legs" class="bg-cardbg">Legs</option>
+                                <option value="Package" class="bg-cardbg">Package</option>
+                                <option value="Other" class="bg-cardbg">Other</option>
                             </select>
                         </div>
                     </div>
 
-                    <div id="itemGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[360px] overflow-y-auto pr-1">
-                        <!-- Dynamic items rendered via JavaScript -->
+                    <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
+                        <span id="selectedCountText" class="font-medium text-blue-400 font-mono">เลือกแล้ว: 0 รายการ</span>
+                        <div class="flex gap-2">
+                            <button onclick="selectAllItems()" class="hover:text-white transition font-medium">เลือกทั้งหมด</button>
+                            <span class="text-gray-600">|</span>
+                            <button onclick="clearSelectedItems()" class="hover:text-white transition font-medium">ล้างทั้งหมด</button>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-3 border-t border-bordercolor">
-                        <span class="text-xs text-gray-400">เลือกแล้ว: <strong id="selectedCountText" class="text-emerald-400 font-mono">0</strong> ชิ้น</span>
-                        <button onclick="openConfirmModal()" class="btn-gradient-emerald text-white px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane"></i> ดำเนินการส่งไอเทม
+                    <div id="inventoryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[340px] overflow-y-auto p-1 bg-inputbg rounded-2xl border border-bordercolor">
+                        <div class="col-span-full text-center text-gray-500 py-12 text-xs">กรุณาเลือกตัวละคร Sender ก่อน</div>
+                    </div>
+                </div>
+
+                <div class="auth-card p-6 space-y-4">
+                    <h3 class="font-semibold text-sm text-gray-200 border-b border-bordercolor pb-3.5 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-blue-400"></i>
+                        3. ระบุเป้าหมายผู้รับ (Receiver)
+                    </h3>
+
+                    <div class="space-y-3.5">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-gray-300">Roblox Username ผู้รับ:</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user-tag absolute left-4 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="text" id="targetUsername" placeholder="พิมพ์ Roblox Username ที่ต้องการส่งไป..." class="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm font-mono">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-gray-300">ข้อความโน้ตบันทึก (ระบุหรือไม่ก็ได้):</label>
+                            <input type="text" id="tradeNote" placeholder="เช่น ค่าคอมมิชชั่น / ของรางวัลกิจกรรม..." class="glass-input w-full rounded-xl px-4 py-3 text-xs">
+                        </div>
+
+                        <button onclick="openConfirmModal()" class="btn-gradient-emerald w-full text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/25 mt-2">
+                            <i class="fa-solid fa-bolt"></i> ดำเนินการส่งไอเทมทันที (Execute Trade)
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Side: Recent Logs & Action Stats -->
-            <div class="space-y-6">
                 <div class="auth-card p-6 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-base text-white flex items-center gap-2">
-                            <i class="fa-solid fa-history text-blue-400"></i> ประวัติล่าสุด
+                    <div class="flex justify-between items-center border-b border-bordercolor pb-3.5">
+                        <h3 class="font-semibold text-sm text-gray-200 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-blue-400"></i>
+                            ประวัติการส่งล่าสุด (Recent Activity)
                         </h3>
-                        <button onclick="openFullHistoryModal()" class="text-xs text-blue-400 hover:text-blue-300 font-medium transition">
-                            ดูทั้งหมด
+                        <button onclick="openFullHistoryModal()" class="text-xs text-blue-400 hover:text-blue-300 font-medium transition flex items-center gap-1">
+                            ดูประวัติทั้งหมด <i class="fa-solid fa-chevron-right text-[10px]"></i>
                         </button>
                     </div>
 
-                    <div id="recentLogsList" class="space-y-2.5 max-h-[480px] overflow-y-auto">
-                        <p class="text-xs text-gray-500 text-center py-6">ยังไม่มีประวัติการส่งไอเทม</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-bordercolor">
+                                    <th class="pb-2.5 font-medium">เวลา</th>
+                                    <th class="pb-2.5 font-medium">ผู้ส่ง -> ผู้รับ</th>
+                                    <th class="pb-2.5 font-medium">จำนวน</th>
+                                    <th class="pb-2.5 font-medium text-center">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentHistoryTableBody" class="divide-y divide-bordercolor/50">
+                                <tr><td colspan="4" class="text-center text-gray-500 py-6">ยังไม่มีประวัติการทำรายการในเซสชันนี้</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Application Logic -->
     <script>
-        // CONFIG & STATE
-        const PROMPTPAY_NUMBER = "0800000000"; // ตั้งค่าเบอร์พร้อมเพย์ของคุณที่นี่
+        // Application State
         let currentUser = null;
-        let selectedItems = new Set();
-        let tradeLogs = JSON.parse(localStorage.getItem('chatphong_trade_logs')) || [];
-        let registeredUsers = JSON.parse(localStorage.getItem('chatphong_users')) || {};
-        let validKeys = JSON.parse(localStorage.getItem('chatphong_keys')) || ["KEY-ENTERPRISE-2026", "KEY-VIP-HUBX"];
+        let userRole = 'USER';
+        let activeKey = '';
+        let authToken = null; // JWT ที่ได้จาก /api/login หรือ /api/register ใช้แนบไปกับ request ที่ต้องยืนยันตัวตน
 
+        let inventoryDatabase = [];
+        let selectedItemIds = new Set();
+        let tradeHistory = [];
         let currentLogPage = 1;
         const logsPerPage = 10;
 
-        // ITEMS DATA (ไม่มีข้อมูลจำลอง mock history)
-        const availableItems = [
-            { id: 'item_1', name: 'Dark Blade', category: 'weapon', badgeClass: 'category-badge-weapon', img: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
-            { id: 'item_2', name: 'Fruit Pass', category: 'gear', badgeClass: 'category-badge-gear', img: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
-            { id: 'item_3', name: 'Valkyrie Helm', category: 'hat', badgeClass: 'category-badge-hat', img: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
-            { id: 'item_4', name: 'Dominus Crown', category: 'hat', badgeClass: 'category-badge-hat', img: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
-            { id: 'item_5', name: 'Cyber Wings', category: 'accessory', badgeClass: 'category-badge-accessory', img: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' }
-        ];
+        // ==== PromptPay QR Config ====
+        // ตั้งค่าเบอร์โทร/พร้อมเพย์ของคุณตรงนี้ที่เดียว ใช้ร่วมกันทุกจุดที่เจน QR
+        const PROMPTPAY_ID = '0643582506';
+        let currentBuyAmount = 89;
 
-        // INITIALIZATION
+        // Initialization
         window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('chatphong_active_user');
-            if (savedUser) {
-                currentUser = savedUser;
-                showDashboard();
-            } else {
-                showAuth();
-            }
-            renderItems();
-            updateBuyQr(100);
+            loadSavedSession();
+            loadHistoryFromStorage();
         });
 
-        // TOAST SYSTEM
-        function showToast(message, type = 'info') {
+        // Toast Notification System
+        function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-900/90 border-emerald-500/50 text-emerald-200' :
-                       type === 'error' ? 'bg-rose-900/90 border-rose-500/50 text-rose-200' : 'bg-slate-900/90 border-blue-500/50 text-blue-200';
-            
-            toast.className = `px-4 py-3 rounded-xl border shadow-lg text-xs font-medium backdrop-blur pointer-events-auto flex items-center gap-2 toast-animate ${bg}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info'}"></i> ${message}`;
-            
+            toast.className = `toast-animate flex items-center gap-3 px-4 py-3 rounded-2xl border text-xs font-medium shadow-2xl backdrop-blur-xl pointer-events-auto ${
+                type === 'success' ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200' :
+                type === 'error' ? 'bg-rose-950/90 border-rose-500/40 text-rose-200' :
+                'bg-slate-900/90 border-blue-500/40 text-blue-200'
+            }`;
+
+            const icon = type === 'success' ? 'fa-circle-check text-emerald-400' :
+                         type === 'error' ? 'fa-circle-xmark text-rose-400' : 'fa-circle-info text-blue-400';
+
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
             container.appendChild(toast);
+
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         }
 
-        // AUTH TAB SWITCHING
+        // Auth Tabs Switcher
         function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tabLoginBtn');
+            const regBtn = document.getElementById('tabRegisterBtn');
             const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabLoginBtn = document.getElementById('tabLoginBtn');
-            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-            const authTitle = document.getElementById('authTitle');
+            const regForm = document.getElementById('registerForm');
+            const title = document.getElementById('authTitle');
 
             if (tab === 'login') {
+                loginBtn.className = 'flex-1 py-2.5 rounded-lg font-medium transition text-white bg-blue-600 shadow';
+                regBtn.className = 'flex-1 py-2.5 rounded-lg font-medium transition text-gray-400 hover:text-white';
                 loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                tabLoginBtn.className = "flex-1 py-2.5 rounded-lg font-medium transition text-white bg-blue-600 shadow";
-                tabRegisterBtn.className = "flex-1 py-2.5 rounded-lg font-medium transition text-gray-400 hover:text-white";
-                authTitle.innerText = "เข้าสู่ระบบเพื่อใช้งาน";
+                regForm.classList.add('hidden');
+                title.innerText = 'เข้าสู่ระบบเพื่อใช้งาน';
             } else {
+                regBtn.className = 'flex-1 py-2.5 rounded-lg font-medium transition text-white bg-blue-600 shadow';
+                loginBtn.className = 'flex-1 py-2.5 rounded-lg font-medium transition text-gray-400 hover:text-white';
+                regForm.classList.remove('hidden');
                 loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                tabRegisterBtn.className = "flex-1 py-2.5 rounded-lg font-medium transition text-white bg-emerald-600 shadow";
-                tabLoginBtn.className = "flex-1 py-2.5 rounded-lg font-medium transition text-gray-400 hover:text-white";
-                authTitle.innerText = "สมัครสมาชิกใหม่";
+                title.innerText = 'สมัครสมาชิกใหม่';
             }
         }
 
-        // PASSWORD STRENGTH METER
+        // Password Strength Checker
         function checkPasswordStrength(password) {
-            const b1 = document.getElementById('pwdBar1');
-            const b2 = document.getElementById('pwdBar2');
-            const b3 = document.getElementById('pwdBar3');
+            const bar1 = document.getElementById('pwdBar1');
+            const bar2 = document.getElementById('pwdBar2');
+            const bar3 = document.getElementById('pwdBar3');
             const text = document.getElementById('pwdStrengthText');
 
-            b1.className = "h-full w-1/3 transition-all duration-300 bg-transparent";
-            b2.className = "h-full w-1/3 transition-all duration-300 bg-transparent";
-            b3.className = "h-full w-1/3 transition-all duration-300 bg-transparent";
-
             if (!password) {
-                text.innerText = "ความปลอดภัย: กรุณากรอกรหัสผ่าน";
-                text.className = "text-gray-500";
+                bar1.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                bar2.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                bar3.className = 'h-full w-1/3 bg-transparent transition-all duration-300';
+                text.innerText = 'ความปลอดภัย: กรุณากรอกรหัสผ่าน';
+                text.className = 'text-gray-500';
                 return;
             }
 
-            if (password.length < 4) {
-                b1.classList.add('bg-rose-500');
-                text.innerText = "ความปลอดภัย: ปานกลาง/ต่ำ";
-                text.className = "text-rose-400";
-            } else if (password.length < 8) {
-                b1.classList.add('bg-amber-500');
-                b2.classList.add('bg-amber-500');
-                text.innerText = "ความปลอดภัย: ปานกลาง";
-                text.className = "text-amber-400";
-            } else {
-                b1.classList.add('bg-emerald-500');
-                b2.classList.add('bg-emerald-500');
-                b3.classList.add('bg-emerald-500');
-                text.innerText = "ความปลอดภัย: สูงมาก";
-                text.className = "text-emerald-400";
+            let score = 0;
+            if (password.length >= 4) score++;
+            if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) score++;
+            if (password.length >= 12 && /[^A-Za-z0-9]/.test(password)) score++;
+
+            // Reset bars
+            bar1.className = 'h-full w-1/3 bg-slate-800 transition-all duration-300';
+            bar2.className = 'h-full w-1/3 bg-slate-800 transition-all duration-300';
+            bar3.className = 'h-full w-1/3 bg-slate-800 transition-all duration-300';
+
+            if (score === 1) {
+                bar1.className = 'h-full w-1/3 bg-rose-500 transition-all duration-300 shadow-[0_0_8px_rgba(244,63,94,0.5)]';
+                text.innerText = 'ความปลอดภัย: ค่อนข้างอ่อนแอ';
+                text.className = 'text-rose-400 font-medium';
+            } else if (score === 2) {
+                bar1.className = 'h-full w-1/3 bg-amber-500 transition-all duration-300 shadow-[0_0_8px_rgba(245,158,11,0.5)]';
+                bar2.className = 'h-full w-1/3 bg-amber-500 transition-all duration-300 shadow-[0_0_8px_rgba(245,158,11,0.5)]';
+                text.innerText = 'ความปลอดภัย: ปานกลาง';
+                text.className = 'text-amber-400 font-medium';
+            } else if (score >= 3) {
+                bar1.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300 shadow-[0_0_8px_rgba(16,185,129,0.5)]';
+                bar2.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300 shadow-[0_0_8px_rgba(16,185,129,0.5)]';
+                bar3.className = 'h-full w-1/3 bg-emerald-500 transition-all duration-300 shadow-[0_0_8px_rgba(16,185,129,0.5)]';
+                text.innerText = 'ความปลอดภัย: แข็งแกร่งยอดเยี่ยม';
+                text.className = 'text-emerald-400 font-semibold';
             }
         }
 
-        // LOGIN & REGISTER HANDLERS
-        function handleLogin(e) {
+        // Login Handler — ยิงไป /api/login จริง แล้วรับ JWT token กลับมา
+        async function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('loginUsername').value.trim();
-            const p = document.getElementById('loginPassword').value.trim();
+            const username = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value;
 
-            if (registeredUsers[u] && registeredUsers[u].password === p) {
-                currentUser = u;
-                localStorage.setItem('chatphong_active_user', u);
-                showDashboard();
-                showToast(`ยินดีต้อนรับกลับ คุณ ${u}`, 'success');
-            } else {
-                showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+            if (username.length < 3) {
+                showToast('ชื่อผู้ใช้งานต้องมีอย่างน้อย 3 ตัวอักษร', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnLoginSubmit');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass })
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showToast(result.message || 'เข้าสู่ระบบไม่สำเร็จ', 'error');
+                    return;
+                }
+
+                currentUser = result.user.username;
+                userRole = result.user.role;
+                activeKey = result.user.key;
+                authToken = result.token || null;
+
+                saveSession();
+                initDashboard();
+                showToast(`ยินดีต้อนรับคุณ ${currentUser} เข้าสู่ระบบสำเร็จ`, 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่', 'error');
+            } finally {
+                btn.disabled = false;
             }
         }
 
-        function handleRegister(e) {
+        // Register Handler — ยิงไป /api/register จริง แล้ว login ต่อทันทีเพื่อรับ token
+        async function handleRegister(e) {
             e.preventDefault();
-            const u = document.getElementById('regUsername').value.trim();
-            const p = document.getElementById('regPassword').value.trim();
-            const cp = document.getElementById('regConfirmPassword').value.trim();
-            const key = document.getElementById('regLicenseKey').value.trim().toUpperCase();
+            const username = document.getElementById('regUsername').value.trim();
+            const pass = document.getElementById('regPassword').value;
+            const confirmPass = document.getElementById('regConfirmPassword').value;
+            const key = document.getElementById('regLicenseKey').value.trim();
 
-            if (u.length < 3) return showToast('ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร', 'error');
-            if (p !== cp) return showToast('รหัสผ่านทั้งสองช่องไม่ตรงกัน', 'error');
-            if (registeredUsers[u]) return showToast('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว', 'error');
-            if (!validKeys.includes(key)) return showToast('License Key ไม่ถูกต้องหรือถูกใช้งานแล้ว', 'error');
+            if (username.length < 3) {
+                showToast('Username ต้องมีอย่างน้อย 3 ตัวอักษร', 'error');
+                return;
+            }
+            if (pass.length < 4) {
+                showToast('รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', 'error');
+                return;
+            }
+            if (pass !== confirmPass) {
+                showToast('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน!', 'error');
+                return;
+            }
+            if (!key) {
+                showToast('กรุณาระบุ License Key', 'error');
+                return;
+            }
 
-            registeredUsers[u] = { password: p, key: key };
-            validKeys = validKeys.filter(k => k !== key);
-            localStorage.setItem('chatphong_users', JSON.stringify(registeredUsers));
-            localStorage.setItem('chatphong_keys', JSON.stringify(validKeys));
+            const btn = document.getElementById('btnRegisterSubmit');
+            btn.disabled = true;
 
-            currentUser = u;
-            localStorage.setItem('chatphong_active_user', u);
-            showDashboard();
-            showToast('สมัครสมาชิกและเข้าสู่ระบบสำเร็จ', 'success');
+            try {
+                const regResponse = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass, key })
+                });
+                const regResult = await regResponse.json();
+
+                if (!regResponse.ok || !regResult.success) {
+                    showToast(regResult.message || 'สมัครสมาชิกไม่สำเร็จ', 'error');
+                    return;
+                }
+
+                // สมัครสำเร็จแล้ว ล็อกอินต่อทันทีเพื่อรับ token และเข้าสู่ Dashboard เลย
+                const loginResponse = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: pass })
+                });
+                const loginResult = await loginResponse.json();
+
+                if (!loginResponse.ok || !loginResult.success) {
+                    showToast('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง', 'success');
+                    switchAuthTab('login');
+                    return;
+                }
+
+                currentUser = loginResult.user.username;
+                userRole = loginResult.user.role;
+                activeKey = loginResult.user.key;
+                authToken = loginResult.token || null;
+
+                saveSession();
+                initDashboard();
+                showToast('สมัครสมาชิกและผูก License Key สำเร็จ!', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Session Management
+        function saveSession() {
+            localStorage.setItem('chatphong_user', currentUser);
+            localStorage.setItem('chatphong_role', userRole);
+            localStorage.setItem('chatphong_key', activeKey);
+            if (authToken) localStorage.setItem('chatphong_token', authToken);
+        }
+
+        function loadSavedSession() {
+            const savedUser = localStorage.getItem('chatphong_user');
+            const savedToken = localStorage.getItem('chatphong_token');
+            // ไม่มี token แปลว่า session ไม่ถูกต้อง/หมดอายุ บังคับ login ใหม่แทนการเชื่อ localStorage เฉยๆ
+            if (savedUser && savedToken) {
+                currentUser = savedUser;
+                userRole = localStorage.getItem('chatphong_role') || 'USER';
+                activeKey = localStorage.getItem('chatphong_key') || '-';
+                authToken = savedToken;
+                initDashboard();
+            }
         }
 
         function handleLogout() {
+            localStorage.removeItem('chatphong_user');
+            localStorage.removeItem('chatphong_role');
+            localStorage.removeItem('chatphong_key');
+            localStorage.removeItem('chatphong_token');
             currentUser = null;
-            localStorage.removeItem('chatphong_active_user');
-            showAuth();
-            showToast('ออกจากระบบแล้ว', 'info');
-        }
-
-        function showDashboard() {
-            document.getElementById('authOverlay').classList.add('hidden');
-            document.getElementById('mainDashboard').classList.remove('hidden');
-            document.getElementById('userBadge').innerText = `User: ${currentUser}`;
-            renderRecentLogs();
-        }
-
-        function showAuth() {
+            authToken = null;
             document.getElementById('authOverlay').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('hidden');
+            showToast('ออกจากระบบเรียบร้อยแล้ว', 'info');
         }
 
-        // BUY KEY & SLIP SYSTEM
-        function openBuyModal() {
-            document.getElementById('buyKeyModal').classList.remove('hidden');
-            if (currentUser) {
-                document.getElementById('buyUserId').value = currentUser;
-                document.getElementById('buyUserHelper').classList.add('hidden');
-            } else {
-                document.getElementById('buyUserHelper').classList.remove('hidden');
-            }
+        // ใช้แนบไปกับ fetch ที่ต้องยืนยันตัวตน เช่น อนาคตถ้าทำ endpoint ส่งไอเทมฝั่ง server จริง
+        function authHeaders() {
+            return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
         }
 
-        function closeBuyModal() {
-            document.getElementById('buyKeyModal').classList.add('hidden');
+        // Dashboard Initialization
+        function initDashboard() {
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+
+            document.getElementById('userBadge').innerText = `User: ${currentUser}`;
+            document.getElementById('roleBadge').innerText = `Role: ${userRole}`;
+            document.getElementById('activeKeyBadge').innerText = `Key: ${activeKey}`;
+
+            fetchInventoryData();
         }
 
-        function setBuyAmount(amt) {
-            document.getElementById('buyAmountInput').value = amt;
-            updateBuyQr(amt);
-        }
-
-        function onBuyAmountInput(val) {
-            const amt = parseFloat(val) || 0;
-            updateBuyQr(amt);
-        }
-
-        function updateBuyQr(amt) {
-            document.getElementById('buyDisplayPrice').innerText = amt;
-            document.getElementById('buyQrImage').src = `https://promptpay.io/${PROMPTPAY_NUMBER}/${amt}.png`;
-        }
-
-        function previewBuySlip(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    const img = document.getElementById('buySlipPreview');
-                    img.src = evt.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('buyUploadText').innerText = `ไฟล์ที่เลือก: ${file.name}`;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function submitSlip(e) {
-            e.preventDefault();
-            const spinner = document.getElementById('buyBtnSpinner');
-            const btnText = document.getElementById('buyBtnText');
-            spinner.classList.remove('hidden');
-            btnText.innerText = "กำลังตรวจสอบสลิป...";
-
+        // Fetch Inventory Mock Data
+        function fetchInventoryData() {
+            showToast('กำลังโหลดข้อมูลคลังไอเทมตัวละคร...', 'info');
             setTimeout(() => {
-                spinner.classList.add('hidden');
-                btnText.innerText = "ยืนยันการชำระเงินและรับ Key";
+                // Mock Senders list
+                const senders = [
+                    { id: '101', name: currentUser + '_Main', userId: '84920192', avatar: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
+                    { id: '102', name: currentUser + '_AltBot', userId: '93810284', avatar: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' },
+                    { id: '103', name: 'Enterprise_Storage_01', userId: '55401928', avatar: 'https://i.postimg.cc/MZCzW5CG/56631ec6-a572-4008-9c51-247b4448ce17.jpg' }
+                ];
 
-                const newKey = "KEY-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-                validKeys.push(newKey);
-                localStorage.setItem('chatphong_keys', JSON.stringify(validKeys));
+                const select = document.getElementById('senderSelect');
+                select.innerHTML = '<option value="" class="bg-cardbg">-- เลือกตัวละคร Sender --</option>';
+                senders.forEach(s => {
+                    select.innerHTML += `<option value="${s.id}" data-name="${s.name}" data-userid="${s.userId}" data-avatar="${s.avatar}" class="bg-cardbg">${s.name} (ID: ${s.userId})</option>`;
+                });
 
-                closeBuyModal();
-                document.getElementById('resultKeyBox').innerText = newKey;
-                document.getElementById('keyResultModal').classList.remove('hidden');
-                
-                // ใส่ Key ในช่องสมัครให้อัตโนมัติถ้าเปิดหน้าสมัครอยู่
-                document.getElementById('regLicenseKey').value = newKey;
-            }, 1500);
+                // Mock Inventory Items
+                inventoryDatabase = [
+                    { id: 'item_1', name: 'Darkfire Blade X', category: 'Weapon', rarity: 'Legendary', value: '15,000', icon: 'fa-sword' },
+                    { id: 'item_2', name: 'Cybernetic Mech Helmet', category: 'Hat', rarity: 'Epic', value: '8,500', icon: 'fa-hat-wizard' },
+                    { id: 'item_3', name: 'Quantum Plasma Rifle', category: 'Weapon', rarity: 'Mythic', value: '45,000', icon: 'fa-gun' },
+                    { id: 'item_4', name: 'Titanium Combat Vest', category: 'Torso', rarity: 'Rare', value: '3,200', icon: 'fa-vest' },
+                    { id: 'item_5', name: 'Aero Jetpack Wings', category: 'Gear', rarity: 'Legendary', value: '22,000', icon: 'fa-jet-fighter' },
+                    { id: 'item_6', name: 'Tactical Combat Boots', category: 'Legs', rarity: 'Uncommon', value: '1,500', icon: 'fa-shoe-prints' },
+                    { id: 'item_7', name: 'Neon Visor Shade', category: 'Face', rarity: 'Epic', value: '6,000', icon: 'fa-glasses' },
+                    { id: 'item_8', name: 'Golden Dragon Amulet', category: 'Accessory', rarity: 'Mythic', value: '50,000', icon: 'fa-gem' },
+                    { id: 'item_9', name: 'Enterprise V3 Bundle Box', category: 'Package', rarity: 'Legendary', value: '30,000', icon: 'fa-box-open' },
+                    { id: 'item_10', name: 'Mystic Energy Orb', category: 'Other', rarity: 'Epic', value: '9,900', icon: 'fa-globe' }
+                ];
+
+                selectedItemIds.clear();
+                renderInventory();
+                showToast('รีเฟรชข้อมูลคลังและตัวละครสำเร็จ!', 'success');
+            }, 600);
         }
 
-        function closeKeyResultModal() {
-            document.getElementById('keyResultModal').classList.add('hidden');
-        }
+        // Sender Change Event
+        function onSenderChange() {
+            const select = document.getElementById('senderSelect');
+            const card = document.getElementById('senderProfileCard');
+            const opt = select.options[select.selectedIndex];
 
-        function copyResultKey() {
-            const keyText = document.getElementById('resultKeyBox').innerText;
-            navigator.clipboard.writeText(keyText);
-            showToast('คัดลอก License Key เรียบร้อยแล้ว', 'success');
-        }
-
-        // ITEM & TRADE SYSTEM
-        function renderItems() {
-            const grid = document.getElementById('itemGrid');
-            const search = document.getElementById('itemSearch').value.toLowerCase();
-            const catFilter = document.getElementById('itemCategoryFilter').value;
-
-            grid.innerHTML = '';
-
-            const filtered = availableItems.filter(item => {
-                const matchName = item.name.toLowerCase().includes(search);
-                const matchCat = catFilter === 'ALL' || item.category === catFilter;
-                return matchName && matchCat;
-            });
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-center text-xs text-gray-500 py-8">ไม่พบไอเทมที่ค้นหา</p>`;
+            if (!select.value) {
+                card.classList.add('hidden');
                 return;
             }
 
-            filtered.forEach(item => {
-                const isSelected = selectedItems.has(item.id);
-                const div = document.createElement('div');
-                div.className = `item-card p-3 flex flex-col items-center text-center gap-2 ${isSelected ? 'selected' : ''}`;
-                div.onclick = () => toggleSelectItem(item.id);
+            document.getElementById('sUsername').innerText = opt.getAttribute('data-name');
+            document.getElementById('sUserId').innerText = 'UserID : ' + opt.getAttribute('data-userid');
+            document.getElementById('sAvatar').src = opt.getAttribute('data-avatar');
+            card.classList.remove('hidden');
+        }
 
-                div.innerHTML = `
-                    <span class="category-badge ${item.badgeClass} absolute top-2 left-2">${item.category}</span>
-                    <img src="${item.img}" class="w-16 h-16 object-cover rounded-xl mt-3" alt="${item.name}">
-                    <p class="text-xs font-semibold text-white truncate w-full mt-1">${item.name}</p>
-                `;
-                grid.appendChild(div);
+        // Render Inventory Grid
+        function renderInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            const search = document.getElementById('itemSearch').value.toLowerCase();
+            const catFilter = document.getElementById('categoryFilter').value;
+
+            const filtered = inventoryDatabase.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(search);
+                const matchCat = catFilter === 'ALL' || item.category === catFilter;
+                return matchSearch && matchCat;
             });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10 text-xs">ไม่พบไอเทมที่ค้นหา</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            filtered.forEach(item => {
+                const isSelected = selectedItemIds.has(item.id);
+                const badgeClass = `category-badge category-badge-${item.category.toLowerCase()}`;
+
+                const card = document.createElement('div');
+                card.className = `item-card p-3 rounded-2xl flex flex-col justify-between gap-2.5 ${isSelected ? 'selected' : ''}`;
+                card.onclick = () => toggleSelectItem(item.id);
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="w-9 h-9 rounded-xl bg-inputbg border border-bordercolor flex items-center justify-center text-blue-400 text-sm shadow-inner shrink-0">
+                            <i class="fa-solid ${item.icon}"></i>
+                        </div>
+                        <span class="${badgeClass}">${item.category}</span>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-white text-xs truncate" title="${item.name}">${item.name}</div>
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 mt-1">
+                            <span class="font-mono text-emerald-400">Value: ${item.value}</span>
+                            <span class="text-gray-500">${item.rarity}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            updateSelectedCountText();
         }
 
         function toggleSelectItem(id) {
-            if (selectedItems.has(id)) {
-                selectedItems.delete(id);
+            if (selectedItemIds.has(id)) {
+                selectedItemIds.delete(id);
             } else {
-                selectedItems.add(id);
+                selectedItemIds.add(id);
             }
-            document.getElementById('selectedCountText').innerText = selectedItems.size;
-            renderItems();
+            renderInventory();
         }
 
-        function updateProfileCards() {
-            const sender = document.getElementById('senderUsername').value.trim() || 'Unspecified';
-            const receiver = document.getElementById('receiverUsername').value.trim() || 'Unspecified';
-
-            document.getElementById('senderProfileName').innerText = sender;
-            document.getElementById('receiverProfileName').innerText = receiver;
+        function selectAllItems() {
+            inventoryDatabase.forEach(item => selectedItemIds.add(item.id));
+            renderInventory();
+            showToast('เลือกไอเทมทั้งหมดในคลังแล้ว', 'info');
         }
 
+        function clearSelectedItems() {
+            selectedItemIds.clear();
+            renderInventory();
+            showToast('ล้างการเลือกไอเทมทั้งหมดแล้ว', 'info');
+        }
+
+        function updateSelectedCountText() {
+            document.getElementById('selectedCountText').innerText = `เลือกแล้ว: ${selectedItemIds.size} รายการ`;
+        }
+
+        // Modal Confirmation
         function openConfirmModal() {
-            const sender = document.getElementById('senderUsername').value.trim();
-            const receiver = document.getElementById('receiverUsername').value.trim();
+            const senderSelect = document.getElementById('senderSelect');
+            const target = document.getElementById('targetUsername').value.trim();
             const note = document.getElementById('tradeNote').value.trim() || '-';
 
-            if (!sender || !receiver) {
-                return showToast('กรุณากรอก Username ผู้ส่งและผู้รับให้ครบถ้วน', 'error');
+            if (!senderSelect.value) {
+                showToast('กรุณาเลือกตัวละคร Sender ก่อนทำการส่ง', 'error');
+                return;
             }
-            if (selectedItems.size === 0) {
-                return showToast('กรุณาเลือกไอเทมอย่างน้อย 1 ชิ้น', 'error');
+            if (!target) {
+                showToast('กรุณาระบุ Roblox Username ผู้รับ (Receiver)', 'error');
+                return;
+            }
+            if (selectedItemIds.size === 0) {
+                showToast('กรุณาเลือกไอเทมอย่างน้อย 1 รายการเพื่อทำการเทรด', 'error');
+                return;
             }
 
-            document.getElementById('modalSender').innerText = sender;
-            document.getElementById('modalTarget').innerText = receiver;
+            const senderName = senderSelect.options[senderSelect.selectedIndex].getAttribute('data-name');
+            document.getElementById('modalSender').innerText = senderName;
+            document.getElementById('modalTarget').innerText = target;
             document.getElementById('modalNote').innerText = note;
 
-            const listContainer = document.getElementById('modalItemList');
-            listContainer.innerHTML = '';
-            selectedItems.forEach(itemId => {
-                const item = availableItems.find(i => i.id === itemId);
+            const modalItemList = document.getElementById('modalItemList');
+            modalItemList.innerHTML = '';
+            selectedItemIds.forEach(id => {
+                const item = inventoryDatabase.find(i => i.id === id);
                 if (item) {
-                    listContainer.innerHTML += `
-                        <div class="flex justify-between items-center text-xs py-1 border-b border-slate-800 last:border-0">
-                            <span class="text-white font-medium">${item.name}</span>
-                            <span class="text-gray-400 font-mono">${item.category}</span>
+                    modalItemList.innerHTML += `
+                        <div class="flex justify-between items-center text-xs bg-cardbg px-2.5 py-1.5 rounded-lg border border-bordercolor">
+                            <span class="text-white font-medium"><i class="fa-solid ${item.icon} text-blue-400 mr-1.5"></i>${item.name}</span>
+                            <span class="text-[10px] font-mono text-emerald-400">${item.category}</span>
                         </div>
                     `;
                 }
@@ -954,61 +1171,97 @@
             document.getElementById('confirmModal').classList.add('hidden');
         }
 
+        // Execute Order
         function executeSendOrder() {
-            const sender = document.getElementById('senderUsername').value.trim();
-            const receiver = document.getElementById('receiverUsername').value.trim();
-            const note = document.getElementById('tradeNote').value.trim() || '-';
-
-            const itemsArray = Array.from(selectedItems).map(id => {
-                const found = availableItems.find(i => i.id === id);
-                return found ? found.name : id;
-            });
-
-            const newLog = {
-                id: 'TR-' + Date.now().toString().slice(-6),
-                time: new Date().toLocaleString('th-TH'),
-                sender: sender,
-                receiver: receiver,
-                items: itemsArray,
-                note: note,
-                status: 'Success'
-            };
-
-            tradeLogs.unshift(newLog);
-            localStorage.setItem('chatphong_trade_logs', JSON.stringify(tradeLogs));
-
             closeConfirmModal();
-            selectedItems.clear();
-            document.getElementById('selectedCountText').innerText = '0';
-            renderItems();
-            renderRecentLogs();
-            showToast('ส่งไอเทมสำเร็จเรียบร้อยแล้ว!', 'success');
+            const senderSelect = document.getElementById('senderSelect');
+            const senderName = senderSelect.options[senderSelect.selectedIndex].getAttribute('data-name');
+            const target = document.getElementById('targetUsername').value.trim();
+            const note = document.getElementById('tradeNote').value.trim() || '-';
+            const count = selectedItemIds.size;
+
+            showToast('กำลังดำเนินการส่งไอเทมผ่านระบบความเร็วสูง...', 'info');
+
+            setTimeout(() => {
+                const success = Math.random() > 0.05; // 95% success rate simulation
+                const now = new Date();
+                const timeString = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH');
+
+                const logEntry = {
+                    id: 'LOG-' + Math.floor(100000 + Math.random() * 900000),
+                    time: timeString,
+                    sender: senderName,
+                    receiver: target,
+                    count: count,
+                    items: Array.from(selectedItemIds).map(id => inventoryDatabase.find(i => i.id === id)?.name || id),
+                    note: note,
+                    status: success ? 'Success' : 'Failed'
+                };
+
+                tradeHistory.unshift(logEntry);
+                saveHistoryToStorage();
+                updateQuotaCounters();
+                renderRecentHistory();
+
+                // Discord Webhook integration check
+                const webhookUrl = document.getElementById('webhookUrlInput').value.trim();
+                if (webhookUrl && success) {
+                    sendDiscordWebhook(webhookUrl, logEntry);
+                }
+
+                if (success) {
+                    showToast(`ส่งไอเทม ${count} รายการไปยัง ${target} สำเร็จเรียบร้อย!`, 'success');
+                    selectedItemIds.clear();
+                    renderInventory();
+                    document.getElementById('targetUsername').value = '';
+                    document.getElementById('tradeNote').value = '';
+                } else {
+                    showToast('การส่งไอเทมล้มเหลว: เซิร์ฟเวอร์ปลายทางปฏิเสธการเชื่อมต่อชั่วคราว', 'error');
+                }
+            }, 1000);
         }
 
-        function renderRecentLogs() {
-            const container = document.getElementById('recentLogsList');
-            container.innerHTML = '';
+        // Webhook Simulation
+        function sendDiscordWebhook(url, log) {
+            console.log('Sending Discord Webhook to:', url, log);
+            // Simulated fetch payload for Discord Embed
+        }
 
-            if (tradeLogs.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">ยังไม่มีประวัติการส่งไอเทม</p>`;
+        // Quota Counters Update
+        function updateQuotaCounters() {
+            const usedEl = document.getElementById('todayUsedCount');
+            const remEl = document.getElementById('todayRemainingCount');
+            const currentUsed = parseInt(usedEl.innerText.split('/')[0]) + 1;
+            usedEl.innerText = `${currentUsed} / 50`;
+            remEl.innerText = Math.max(0, 50 - currentUsed);
+        }
+
+        // Render Recent History Table
+        function renderRecentHistory() {
+            const tbody = document.getElementById('recentHistoryTableBody');
+            if (tradeHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-6">ยังไม่มีประวัติการทำรายการในเซสชันนี้</td></tr>';
                 return;
             }
 
-            tradeLogs.slice(0, 5).forEach(log => {
-                container.innerHTML += `
-                    <div class="bg-inputbg p-3 rounded-xl border border-bordercolor space-y-1 text-xs">
-                        <div class="flex justify-between items-center">
-                            <span class="font-mono text-blue-400 font-medium">${log.sender} ➔ ${log.receiver}</span>
-                            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">${log.status}</span>
-                        </div>
-                        <p class="text-gray-300 font-light truncate">${log.items.join(', ')}</p>
-                        <p class="text-[10px] text-gray-500 font-mono">${log.time}</p>
-                    </div>
+            tbody.innerHTML = '';
+            tradeHistory.slice(0, 5).forEach(log => {
+                const statusBadge = log.status === 'Success'
+                    ? '<span class="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-medium">Success</span>'
+                    : '<span class="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-medium">Failed</span>';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-inputbg/50 transition">
+                        <td class="py-2.5 font-mono text-gray-400 text-[11px]">${log.time}</td>
+                        <td class="py-2.5 font-mono text-white"><span class="text-blue-400">${log.sender}</span> <i class="fa-solid fa-arrow-right text-[10px] text-gray-500 mx-1"></i> <span class="text-emerald-400">${log.receiver}</span></td>
+                        <td class="py-2.5 font-mono text-gray-300">${log.count} ชิ้น</td>
+                        <td class="py-2.5 text-center">${statusBadge}</td>
+                    </tr>
                 `;
             });
         }
 
-        // FULL HISTORY MODAL LOGIC
+        // Full History Modal Management
         function openFullHistoryModal() {
             document.getElementById('fullHistoryModal').classList.remove('hidden');
             renderFullHistoryTable();
@@ -1019,53 +1272,52 @@
         }
 
         function renderFullHistoryTable() {
-            const search = document.getElementById('modalLogSearch').value.toLowerCase();
-            const statusFilter = document.getElementById('modalLogFilterStatus').value;
             const tbody = document.getElementById('fullHistoryTableBody');
+            const search = document.getElementById('modalLogSearch').value.toLowerCase();
+            const filterStatus = document.getElementById('modalLogFilterStatus').value;
 
-            let filtered = tradeLogs.filter(log => {
-                const matchText = log.sender.toLowerCase().includes(search) || 
-                                  log.receiver.toLowerCase().includes(search) || 
-                                  log.note.toLowerCase().includes(search);
-                const matchStatus = statusFilter === 'ALL' || log.status === statusFilter;
-                return matchText && matchStatus;
+            // Stats update
+            document.getElementById('statTotal').innerText = tradeHistory.length;
+            document.getElementById('statSuccess').innerText = tradeHistory.filter(h => h.status === 'Success').length;
+            document.getElementById('statFailed').innerText = tradeHistory.filter(h => h.status === 'Failed').length;
+
+            const filtered = tradeHistory.filter(log => {
+                const matchSearch = log.receiver.toLowerCase().includes(search) || log.sender.toLowerCase().includes(search) || log.note.toLowerCase().includes(search);
+                const matchStatus = filterStatus === 'ALL' || log.status === filterStatus;
+                return matchSearch && matchStatus;
             });
-
-            // Update Stats
-            document.getElementById('statTotal').innerText = tradeLogs.length;
-            document.getElementById('statSuccess').innerText = tradeLogs.filter(l => l.status === 'Success').length;
-            document.getElementById('statFailed').innerText = tradeLogs.filter(l => l.status === 'Failed').length;
 
             const totalPages = Math.ceil(filtered.length / logsPerPage) || 1;
             if (currentLogPage > totalPages) currentLogPage = totalPages;
 
-            const startIdx = (currentLogPage - 1) * logsPerPage;
-            const pageLogs = filtered.slice(startIdx, startIdx + logsPerPage);
+            const start = (currentLogPage - 1) * logsPerPage;
+            const paginated = filtered.slice(start, start + logsPerPage);
 
-            tbody.innerHTML = '';
-
-            if (pageLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-10 font-light">ไม่มีข้อมูลประวัติการทำงาน</td></tr>`;
+            if (paginated.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-10">ไม่พบข้อมูลประวัติการทำรายการ</td></tr>';
             } else {
-                pageLogs.forEach(log => {
+                tbody.innerHTML = '';
+                paginated.forEach(log => {
+                    const statusBadge = log.status === 'Success'
+                        ? '<span class="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-medium">Success</span>'
+                        : '<span class="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-medium">Failed</span>';
+
                     tbody.innerHTML += `
-                        <tr class="hover:bg-slate-900/50 transition-colors">
+                        <tr class="hover:bg-cardbg/40 transition">
                             <td class="p-3.5 font-mono text-gray-400 text-[11px]">${log.time}</td>
-                            <td class="p-3.5 font-medium text-blue-400 font-mono">${log.sender}</td>
-                            <td class="p-3.5 font-medium text-emerald-400 font-mono">${log.receiver}</td>
-                            <td class="p-3.5 text-gray-300 max-w-xs truncate">${log.items.join(', ')}</td>
-                            <td class="p-3.5 text-gray-400 font-light">${log.note}</td>
-                            <td class="p-3.5 text-center">
-                                <span class="px-2 py-1 text-[10px] rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-mono">${log.status}</span>
-                            </td>
+                            <td class="p-3.5 font-mono text-blue-400 font-medium">${log.sender}</td>
+                            <td class="p-3.5 font-mono text-emerald-400 font-medium">${log.receiver}</td>
+                            <td class="p-3.5 text-gray-300 max-w-xs truncate" title="${log.items.join(', ')}">${log.items.join(', ')}</td>
+                            <td class="p-3.5 text-gray-400">${log.note}</td>
+                            <td class="p-3.5 text-center">${statusBadge}</td>
                         </tr>
                     `;
                 });
             }
 
-            document.getElementById('logCounterText').innerText = `แสดง ${pageLogs.length} จาก ${filtered.length} รายการ`;
+            document.getElementById('logCounterText').innerText = `แสดง ${paginated.length} จาก ${filtered.length} รายการ`;
             document.getElementById('pageIndicator').innerText = `${currentLogPage} / ${totalPages}`;
-            document.getElementById('prevPageBtn').disabled = currentLogPage <= 1;
+            document.getElementById('prevPageBtn').disabled = currentLogPage === 1;
             document.getElementById('nextPageBtn').disabled = currentLogPage >= totalPages;
         }
 
@@ -1074,32 +1326,198 @@
             renderFullHistoryTable();
         }
 
-        function exportHistoryCSV() {
-            if (tradeLogs.length === 0) return showToast('ไม่มีข้อมูลประวัติให้ส่งออก', 'error');
-
-            let csv = "\uFEFFเวลา/วันที่,ผู้ส่ง,ผู้รับ,รายการไอเทม,โน้ต,สถานะ\n";
-            tradeLogs.forEach(log => {
-                csv += `"${log.time}","${log.sender}","${log.receiver}","${log.items.join('; ')}","${log.note}","${log.status}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `trade_logs_${Date.now()}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('ส่งออก CSV เรียบร้อยแล้ว', 'success');
+        function clearAllHistory() {
+            if (confirm('คุณต้องการล้างประวัติการทำรายการทั้งหมดใช่หรือไม่?')) {
+                tradeHistory = [];
+                saveHistoryToStorage();
+                renderRecentHistory();
+                renderFullHistoryTable();
+                showToast('ล้างประวัติทั้งหมดเรียบร้อยแล้ว', 'info');
+            }
         }
 
-        function clearAllHistory() {
-            if (confirm('คุณต้องการล้างประวัติการทำงานทั้งหมดใช่หรือไม่?')) {
-                tradeLogs = [];
-                localStorage.removeItem('chatphong_trade_logs');
-                renderFullHistoryTable();
-                renderRecentLogs();
-                showToast('ล้างประวัติเรียบร้อยแล้ว', 'info');
+        function exportHistoryCSV() {
+            if (tradeHistory.length === 0) {
+                showToast('ไม่มีข้อมูลสำหรับส่งออก CSV', 'error');
+                return;
             }
+
+            let csvContent = 'data:text/csv;charset=utf-8,ID,Time,Sender,Receiver,Count,Note,Status\r\n';
+            tradeHistory.forEach(log => {
+                csvContent += `"${log.id}","${log.time}","${log.sender}","${log.receiver}",${log.count},"${log.note}","${log.status}"\r\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `ChatphongHubx_Trade_Logs_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('ส่งออกไฟล์ CSV สำเร็จ!', 'success');
+        }
+
+        function saveHistoryToStorage() {
+            localStorage.setItem('chatphong_history', JSON.stringify(tradeHistory));
+        }
+
+        function loadHistoryFromStorage() {
+            const saved = localStorage.getItem('chatphong_history');
+            if (saved) {
+                try {
+                    tradeHistory = JSON.parse(saved);
+                    renderRecentHistory();
+                } catch (e) {
+                    tradeHistory = [];
+                }
+            }
+        }
+
+        // ===================== BUY KEY SYSTEM =====================
+        function openBuyModal() {
+            const userInput = document.getElementById('buyUserId');
+            const helperText = document.getElementById('buyUserHelper');
+
+            if (currentUser) {
+                userInput.value = currentUser;
+                helperText.classList.add('hidden');
+            } else {
+                userInput.value = '';
+                helperText.classList.remove('hidden'); // เตือนว่ายังไม่ได้ล็อกอิน ให้ตั้ง username เอง
+            }
+
+            // รีเซ็ตยอดเงินเป็นค่าเริ่มต้นทุกครั้งที่เปิด Modal แล้วเจน QR ให้ตรงกัน
+            setBuyAmount(100);
+
+            document.getElementById('buyKeyModal').classList.remove('hidden');
+        }
+
+        function closeBuyModal() {
+            document.getElementById('buyKeyModal').classList.add('hidden');
+        }
+
+        // เจน QR ใหม่ทุกครั้งที่ยอดเงินเปลี่ยน — promptpay.io จะฝังยอดเงินลงใน QR
+        // ทำให้แอปธนาคารของผู้จ่ายล็อกยอดโอนตายตัว แก้ไขจำนวนเงินเองไม่ได้
+        function regenerateBuyQR(amount) {
+            const qrImg = document.getElementById('buyQrImage');
+            const priceText = document.getElementById('buyDisplayPrice');
+            qrImg.src = `https://promptpay.io/${PROMPTPAY_ID}/${amount}.png`;
+            priceText.innerText = amount;
+        }
+
+        function setBuyAmount(amount) {
+            currentBuyAmount = amount;
+            document.getElementById('buyAmountInput').value = amount;
+            highlightActiveAmountBtn(amount);
+            regenerateBuyQR(amount);
+        }
+
+        function onBuyAmountInput(value) {
+            const amount = parseInt(value, 10);
+            if (!amount || amount <= 0) return; // รอจนกว่าจะเป็นตัวเลขที่ใช้งานได้ ไม่เจน QR ค้างๆ
+            currentBuyAmount = amount;
+            highlightActiveAmountBtn(amount);
+            regenerateBuyQR(amount);
+        }
+
+        function highlightActiveAmountBtn(amount) {
+            document.querySelectorAll('.buy-amount-btn').forEach(btn => {
+                if (parseInt(btn.getAttribute('data-amount'), 10) === amount) {
+                    btn.classList.add('border-emerald-500', 'text-emerald-400');
+                } else {
+                    btn.classList.remove('border-emerald-500', 'text-emerald-400');
+                }
+            });
+        }
+
+        function previewBuySlip(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('buySlipPreview');
+            const uploadText = document.getElementById('buyUploadText');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    uploadText.textContent = `ไฟล์: ${file.name}`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function submitSlip(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('buyUserId').value.trim();
+            const slipFile = document.getElementById('buySlipFile').files[0];
+
+            if (!userId || !slipFile) {
+                showToast('กรุณากรอก Username และแนบสลิปให้ครบถ้วน', 'error');
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btnBuySubmit');
+            const btnText = document.getElementById('buyBtnText');
+            const btnSpinner = document.getElementById('buyBtnSpinner');
+
+            btnSubmit.disabled = true;
+            btnText.textContent = 'กำลังตรวจสอบสลิป...';
+            btnSpinner.classList.remove('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('userId', userId);
+                formData.append('amount', currentBuyAmount);
+                formData.append('slip', slipFile);
+
+                const response = await fetch('/api/verify-slip', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closeBuyModal();
+                    document.getElementById('resultKeyBox').innerText = result.licenseKey;
+                    document.getElementById('keyResultModal').classList.remove('hidden');
+                    document.getElementById('buyKeyForm').reset();
+                    document.getElementById('buySlipPreview').classList.add('hidden');
+                    document.getElementById('buyUploadText').textContent = '📁 คลิกเพื่อเลือกรูปสลิปโอนเงิน';
+
+                    // ถ้าอยู่ที่หน้าสมัครสมาชิก ให้เติม Key ลงในช่อง License Key ให้อัตโนมัติ
+                    const regKeyInput = document.getElementById('regLicenseKey');
+                    if (regKeyInput) {
+                        regKeyInput.value = result.licenseKey;
+                    }
+
+                    showToast('ชำระเงินสำเร็จ ได้รับ License Key แล้ว!', 'success');
+                } else {
+                    showToast(result.message || 'สลิปไม่ถูกต้อง', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+            } finally {
+                btnSubmit.disabled = false;
+                btnText.textContent = 'ยืนยันการชำระเงินและรับ Key';
+                btnSpinner.classList.add('hidden');
+            }
+        }
+
+        function closeKeyResultModal() {
+            document.getElementById('keyResultModal').classList.add('hidden');
+
+            // หลังปิดหน้าต่างผลลัพธ์ ถ้ายังไม่ได้ล็อกอิน ให้สลับไปแท็บสมัครสมาชิกและโฟกัสช่อง Key ให้เลย
+            if (!currentUser) {
+                switchAuthTab('register');
+            }
+        }
+
+        function copyResultKey() {
+            const key = document.getElementById('resultKeyBox').innerText;
+            navigator.clipboard.writeText(key);
+            showToast('คัดลอก Key เรียบร้อยแล้ว', 'info');
         }
     </script>
 </body>
