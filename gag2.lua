@@ -1,17 +1,35 @@
 -- ====================================================
 -- SCRIPT สำหรับ Roblox Executor (พร้อมระบบ Key Verification)
 -- ====================================================
+-- วิธีใช้ผ่าน Loadstring:
+-- local key = "GAG2-TEST-1111-2222"
+-- loadstring(game:HttpGet('https://raw.githubusercontent.com/...'))()
+-- ====================================================
+
+-- รองรับการดึงค่า key จากสคริปต์ด้านนอกที่สั่ง loadstring ถ้าไม่มีให้เซ็ตค่าว่างไว้
+local LICENSE_KEY = key or ""
+
+-- 🛑 1. ตรวจสอบเบื้องต้นว่าผู้ใช้ใส่คีย์มาหรือไม่
+if not LICENSE_KEY or LICENSE_KEY == "" or LICENSE_KEY == "ใส่คีย์" or LICENSE_KEY == "ตรงนี้" then
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "ChatphongHubx Security",
+        Text = "คุณไม่มีคีย์ ใส่คีย์ตรงนี้ก่อนเพื่อใช้งาน",
+        Duration = 6
+    })
+    error("❌ [ChatphongHubx Error]: คุณไม่มีคีย์ ใส่คีย์ตรงนี้ก่อนเพื่อใช้งาน")
+    return -- หยุดการทำงานสคริปต์ทันที
+end
+
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 local httpRequest = syn and syn.request or http_request or request
 
-local WEB_URL = "http://127.0.0.1:3000" -- แนะนำใช้ 127.0.0.1 เพื่อความเสถียร
-local LICENSE_KEY = "GAG2-TEST-1111-2222" -- 🔑 ใส่ License Key ของผู้ใช้งานที่ได้จากหน้าเว็บ
+local WEB_URL = "https://tgag2web.onrender.com" -- (ตัด / ตัวสุดท้ายออก)
 
 -- ==========================================
--- 0. ระบบตรวจสอบ License Key & HWID
+-- 2. ระบบตรวจสอบ License Key & HWID กับ Server
 -- ==========================================
 local function GetHWID()
     local success, result = pcall(function()
@@ -44,24 +62,34 @@ local function VerifyLicenseKey()
         local data = HttpService:JSONDecode(res.Body)
         if data.success then
             print("========================================")
-            print("✅ " .. data.message) -- จะขึ้น: "เชื่อมต่อกับระบบเว็บเรียบร้อย"
+            print("✅ " .. data.message)
             print("========================================")
             return true
         else
             warn("========================================")
-            warn("❌ " .. data.message) -- เช่น: "คุณต้องชำระเงินก่อนใช้ระบบนี้"
+            warn("❌ " .. data.message)
             warn("========================================")
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "ChatphongHubx Security",
+                Text = data.message or "Key ไม่ถูกต้อง หรือถูกใช้งานไปแล้ว!",
+                Duration = 6
+            })
             return false
         end
     else
         warn("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์เพื่อตรวจสอบ Key ได้!")
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "ChatphongHubx Security",
+            Text = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ตรวจสอบคีย์ได้",
+            Duration = 6
+        })
         return false
     end
 end
 
--- 🛑 ทำการเช็ค คีย์ ก่อนเริ่มต้นทำอย่างอื่น
+-- 🛑 ทำการเช็ค คีย์ กับ Server ก่อนเริ่มต้นทำอย่างอื่น
 if not VerifyLicenseKey() then
-    warn("⛔ การทำงานถูกระงับ: กรุณาชำระเงินหรือตรวจสอบ License Key ของคุณ")
+    warn("⛔ การทำงานถูกระงับ: กรุณาตรวจสอบ License Key ของคุณ")
     return -- หยุดการทำงานสคริปต์ทันที
 end
 
