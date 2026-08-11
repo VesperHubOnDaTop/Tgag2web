@@ -1,18 +1,16 @@
 {
-  "name": "po",
+  "name": "chatphonghubx-system",
   "version": "1.0.0",
-  "description": "",
+  "description": "Enterprise Multi-Trade System Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "engines": {
+    "node": ">=18.x"
+  }
 }
